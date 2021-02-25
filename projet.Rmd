@@ -49,5 +49,11 @@ Donc deja on regarde ceux qui ont le plus d'appli .
 app %>% group_by(Developer) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=15) ;
 ````
 
+ici on a le tableau des 10 premiers dev qui ont le plus d'application a leur actif
 
+ensuite on vas faire un compratif avec leur note
 
+```{r}
+app %>% group_by(Developer,`Average User Rating`) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=15) %>% select(`Average User Rating`,countApp)
+````
+et ici on peut voir tous de suite que le nombre d'app a notre actif n'a aucun rapport avec la notes
