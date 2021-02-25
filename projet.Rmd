@@ -39,13 +39,14 @@ file='app.csv'
 app<- read_delim(file,delim=",") 
 ```
 
-Problematique :"est ce que le developpeur participe a la popularité d'une application"
+Problematique :"Y a t-il des facteurs qui font que la notes d'une application est meilleur ? "
 
 
-Donc maintenant essayons de voir qui a fait le plus d'application 
+On pourrai donc regarder si les developpeur qui on beaucoup d'application a leur actif on de bonne note ? 
+Donc deja on regarde ceux qui ont le plus d'appli .
 
 ```{r}
-app %>% group_by(Developer) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=15)
+app %>% group_by(Developer) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=15) ;
 ````
 
 
