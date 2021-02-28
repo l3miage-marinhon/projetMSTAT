@@ -1,0 +1,16 @@
+  "group" : "19",
+  "members" : [
+    {
+      "login" : "bruyerpi",
+      "firstname" : "Pierre",
+      "lastname" : "BRUYERE",
+      "email" : "bruyere.pierredu07@gmail.com"
+    },
+    {
+      "login" : "marinhon",
+      "firstname" : "Nicolas",
+      "lastname" : "Marinho",
+      "email" : "nicomr70@gmail.com"
+    }
+  ]
+}
