@@ -62,7 +62,7 @@ et ici on peut voir tous de suite que le nombre d'app a notre actif n'a aucun ra
 
 Ici on va voir si un nombre ne note important indique une très bonne note
 ```{r}
-app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% head(15)
+app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% filter(!is.na(`Average User Rating`)) %>% ggplot(app,mapping = aes(group=`User Rating Count`,y=`Average User Rating`,x=`User Rating Count`))+ geom_boxplot()
 ```
 On peut effectivement voir que dans la plupart des cas avoir plus de note veut dire une bonne note, il y a bien evidement quelques exceptions mais dans l'ensemble, avoir beaucoup de note veut dire une bonne note.
 
