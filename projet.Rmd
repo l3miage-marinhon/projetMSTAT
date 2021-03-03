@@ -3,12 +3,14 @@ title: "Projet etude app mobile"
 author: "Marinho Nicolas et Bruyere Nicolas"
 date: "2/24/2021"
 output: pdf_document
+langages: french 
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
+library(forcats)
 
 version
 ```
@@ -47,17 +49,37 @@ Donc deja on regarde ceux qui ont le plus d'appli .
 
 ```{r}
 app %>% group_by(Developer) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=15) ;
-````
+```
 
 ici on a le tableau des 10 premiers dev qui ont le plus d'application a leur actif
 
-ensuite on vas faire un compratif avec leur note
+ensuite on vas faire un comparatif avec leur note
 
 ```{r}
-app %>% group_by(Developer,`Average User Rating`) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=15) %>% select(`Average User Rating`,countApp)
-````
-et ici on peut voir tous de suite que le nombre d'app a notre actif n'a aucun rapport avec la notes
+app %>%  group_by(Developer,`Average User Rating`) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=10) %>% select(Developer,`Average User Rating`,countApp);
+```
+//mettre en evidence que certaine appli ne sont pa note donc filtrer ça apres
 
+mais ici on peut voir que certaine des applications de ces developpeur ne sont pas notées voila pourquoi noous avons des NA ... 
+
+alors maintenant nous allons regarder ceux qui ont le plus d'application noté
+
+```{r}
+nbApp<-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp)  
+
+moyGradeDev<-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% summarize(AvgGrade=mean(`Average User Rating`))
+
+tableFinal<-left_join(nbApp,moyGradeDev) %>% arrange(-nbApp$countApp) %>% head(15)
+
+tableFinal %>% select_all()
+
+tableFinal %>% ggplot(tableFinal,mapping=aes(AvgGrade,countApp))+ geom_col(position = "dodge")
+```
+//conclure(le nombre ne fait pas la note )
+et ici on peut voir tous de suite que le nombre d'app a notre actif n'a aucun rapport avec la notes
+```{r}
+app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% arrange(Developer,by_group=TRUE) 
+```
 
 
 Ici on va voir si un nombre ne note important indique une très bonne note
@@ -77,3 +99,23 @@ Maintenant, on va voir si le prix a un impact sur la note
 app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% head(n=15)
 ```
 On peut effectivemnt voir que les applications payantes, les plus chères ici, sont en général bien noté, mais pas avec des excellentes notes non plus, on peut voir que la majorité sont à 4.0 avec quelques uns à 4.5 et 3.5 mais aucun 5.0
+
+
+
+//faire par categorie , si la note est plus elevé 
+
+
+donc commençons a regarder les notes moyennes par categorie d'application 
+```{r , fig.width=15,fig.height=3}
+app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% ggplot(app,mapping=aes(`Primary Genre`,AvgGrade))+geom_col()
+
+```
+//conclure sur la cette partie (montrer quel categorie est la plus haute)
+
+
+
+
+
+
+
+
