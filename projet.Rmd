@@ -62,18 +62,18 @@ et ici on peut voir tous de suite que le nombre d'app a notre actif n'a aucun ra
 
 Ici on va voir si un nombre ne note important indique une très bonne note
 ```{r}
-app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% filter(!is.na(`Average User Rating`)) %>% ggplot(app,mapping = aes(group=`User Rating Count`,y=`Average User Rating`,x=`User Rating Count`))+ geom_boxplot()
+app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% filter(!is.na(`Average User Rating`)) %>% ggplot(app,mapping = aes(x=`Average User Rating`,y=`User Rating Count`))+ geom_jitter()
 ```
 On peut effectivement voir que dans la plupart des cas avoir plus de note veut dire une bonne note, il y a bien evidement quelques exceptions mais dans l'ensemble, avoir beaucoup de note veut dire une bonne note.
 
 ```{r}
-app %>% arrange(`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% head(n=15)
+app %>% arrange(`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% head(n=2000) %>% ggplot(app,mapping = aes(x=`Average User Rating`,y=`User Rating Count`))+ geom_jitter()
 ```
 En revanche, ce n'est pas parcequ'on a peu de votes, qu'on a une mauvaise note, les résultats sont beaucoup plus mitigés, il y en qui sont a deux et d'autres à 5.
 
 
 Maintenant, on va voir si le prix a un impact sur la note
 ```{r}
-app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% head(n=15)
+app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% ggplot(app,mapping = aes(x=`Average User Rating`,y=Price))+ geom_jitter()
 ```
 On peut effectivemnt voir que les applications payantes, les plus chères ici, sont en général bien noté, mais pas avec des excellentes notes non plus, on peut voir que la majorité sont à 4.0 avec quelques uns à 4.5 et 3.5 mais aucun 5.0
