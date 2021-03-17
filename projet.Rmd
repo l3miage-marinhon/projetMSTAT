@@ -96,7 +96,7 @@ En revanche, ce n'est pas parcequ'on a peu de votes, qu'on a une mauvaise note, 
 
 Maintenant, on va voir si le prix a un impact sur la note
 ```{r}
-app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=Price,color = `Average User Rating`))+ geom_jitter()
+app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=Price,color = `Average User Rating`))+ geom_jitter() + geom_smooth(color="red",show.legend = TRUE)
 ```
 On peut effectivemnt voir que les applications payantes, les plus chères ici, sont en général bien noté, mais pas avec des excellentes notes non plus, on peut voir que la majorité sont à 4.0 avec quelques uns à 4.5 et 3.5 mais aucun 5.0
 
@@ -107,15 +107,22 @@ On peut effectivemnt voir que les applications payantes, les plus chères ici, s
 
 donc commençons a regarder les notes moyennes par categorie d'application 
 ```{r , fig.width=15,fig.height=3}
-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% ggplot(app,mapping=aes(`Primary Genre`,AvgGrade))+geom_col()
+app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% ggplot(app,mapping=aes(`Primary Genre`,AvgGrade,fill=`Primary Genre`))+geom_col()
 
 ```
 //conclure sur la cette partie (montrer quel categorie est la plus haute)
 
 
+Ici on va regarder si les achats dans l'application ont une influence sur la note.
+```{r}
+app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% tail(15) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25)
+```
 
+```{r}
+app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25)
+```
+A VOIR SI UN DES DEUX PEUT ETRE BIEN OU LES DEUX
 
-
-
-
-
+```{r}
+app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25) 
+```
