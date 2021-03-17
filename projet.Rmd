@@ -75,6 +75,7 @@ tableFinal %>% select_all()
 
 tableFinal %>% ggplot(tableFinal,mapping=aes(AvgGrade,countApp))+ geom_col(position = "dodge")
 ```
+//icic faire un nuage de point pour voir une courbe de tendances (regarder si il y a une tendance lineaire)
 //conclure(le nombre ne fait pas la note )
 et ici on peut voir tous de suite que le nombre d'app a notre actif n'a aucun rapport avec la notes
 ```{r}
@@ -111,6 +112,8 @@ app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% 
 
 ```
 //conclure sur la cette partie (montrer quel categorie est la plus haute)
+
+///ici mettre les bar de confiance !!! 
 
 
 
