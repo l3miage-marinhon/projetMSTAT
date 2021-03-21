@@ -11,29 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(forcats)
-
+library(stringr)
 version
 ```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 Ici nous allons procéder à la récupération du jeu de données trouvé sur Internet et nous allons le mettre dans la variable nommée file.
 ```{r}
@@ -43,7 +23,7 @@ app<- read_delim(file,delim=",")
 Nous avons décidé que pour étudier ce jeu de données nous allions utiliser la problématique suivante: "Y a t-il des facteurs qui font que la note d'une application est plus élevée? "
 
 
-Nous avons, dans un premier temps décider de regarder si les développeurs qui ont beaucoup d'application à leur actif sur le site ont des bonnes notes.
+Nous avons, dans un premier temps décider de regarder si les développeurs qui ont beaucoup d'application à leur actif sur l'Appstore ont des bonnes notes.
 
 Donc on commence par regarder ceux qui ont le plus d'applications à leur actif .
 
@@ -69,68 +49,68 @@ nbApp<-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>%
 
 moyGradeDev<-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% summarize(AvgGrade=mean(`Average User Rating`))
 
-tableFinal<-left_join(nbApp,moyGradeDev) %>% arrange(-nbApp$countApp) %>% head(15)
+tableFinal<-left_join(nbApp,moyGradeDev) %>% arrange(-nbApp$countApp)
 
 tableFinal %>% select_all()
 
-tableFinal %>% ggplot(tableFinal,mapping=aes(AvgGrade,countApp))+ geom_col(position = "dodge")
+tableFinal %>% ggplot(tableFinal,mapping=aes(countApp,AvgGrade,color=AvgGrade))+ geom_jitter()+geom_smooth(method="auto",color="red",se=TRUE)
 ```
 //icic faire un nuage de point pour voir une courbe de tendances (regarder si il y a une tendance lineaire)
-//conclure(le nombre ne fait pas la note )
+//conclure(le nombre ne fait pas la note)
 et ici on peut voir tous de suite que le nombre d'app a notre actif n'a aucun rapport avec la notes
-```{r}
-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% arrange(Developer,by_group=TRUE) 
-```
+
 
 Maintenant, nous allons voir si une application ayant beaucoup de notes implique que cette application aura une bonne note.
 ```{r}
-app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% filter(!is.na(`Average User Rating`)) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+ geom_jitter(size=3) + geom_smooth(method = "lm",color="red")
+app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% filter(!is.na(`Average User Rating`)) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+ geom_jitter(size=1) + geom_smooth(method = "auto",color="red")
 ```
 On peut effectivement voir que dans la plupart des cas, une application qui a beaucoup de notes sera aussi une application qui aura une bonne note, il y a bien evidement quelques exceptions mais dans l'ensemble, avoir beaucoup de note veut dire une bonne note.
+
+//parler de la courbe tendance et de l'intervalle de confiance 
 
 
 Mais, est-ce-qu'une application qui a peu de notes veut dire qu'elle a une mauvaise note?
 C'est ce que nous allons regarder maintenant.
 ```{r}
-app %>% arrange(`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% head(n=2000) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+ geom_jitter() + geom_smooth(method = "lm",color="red")
+app %>% arrange(`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% head(n=7000) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+ geom_jitter() + geom_smooth(method = "auto",color="red")
 ```
+//faire une description entre les deux graphique pour montrer que l'on voit bien l'evolution avec la courbe de tendance
 On peut observer que non, avoir peu de notes ne veut pas dire avoir une mauvaise note, on peut en effet voir que les résultat sont très éparpillés et prouvent donc que la réponse à notre question est non.
+
 
 
 Dans cette partie, nous allons voir si une application qui a un prix aura une bonne note.
 ```{r,fig.width=10}
-app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=Price,color = `Average User Rating`,scale(Price,)))+ geom_jitter() + geom_smooth(color="red")
+app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=Price,color = `Average User Rating`,scale(Price,)))+ geom_jitter() + geom_smooth(method="auto",color="red") +xlab("Price ($)")
 ```
+//parle de la tendance
 On peut partager les résultats en deux, les applications qui coûtent moins de 15 dollars et celles qui coûtent plus de 15 dollars.
 On observe que les applications qui coûtent moins que 15 dollars vont d'une très mauvaise note, 1, jusqu'à 5.
 On observe aussi que les applications qui coûtent plus que 15 dollars ont forcèment une bonne note, les plus auvaises étant supérieurs à 3.
-On peut donc conclure que à partir d'environ 15 dollars, le prix d'une application a indique une bonne note pour l'application.
+On peut donc conclure que à partir d'environ 15 dollars, le prix d'une application a indique une bonne note pour l'application. 
 
 
 Ici, nous allons regarder si la catégorie du jeu a une influence sur les notes, en moyenne.
 ```{r , fig.width=20,fig.height=4}
 app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% ggplot(app,mapping=aes(`Primary Genre`,AvgGrade,fill=`Primary Genre`))+geom_col()
 ```
+//ici pensez a mettre notre marge d'erreur avec geom_errorbar(nico)
 On peut effectivement observer que certaines catégories comme Food & Drink ou Newson une moyenne très haute, casiment à 5, alors que Medical et Lifestyle sont des catégories avec des moyennes beaucoup plus faibles, proche de 3. On peut en conclure que la catégorie de l'application a une vrai relation avec la note, les développeurs ont en moyenne des meilleures notes sur certaines catégories que sur d'autres.
 
 
 Ici on va regarder si les achats dans l'application ont une influence sur la note.
 ```{r}
-app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% tail(15) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25)
-```
-
-```{r}
 app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25) + ylab("nbApplication")
 ```
 A VOIR SI UN DES DEUX PEUT ETRE BIEN OU LES DEUX
+//faire une petit conclu 
 
-Maintenant, nous allons regarder si l'Age Rating, donc l'âge conseillé pour tel ou tel application, a une influence sur les notes.
+Maintenant, nous allons regarder si l'Age Rating, donc l'âge conseillé pour telle ou telle application, a une influence sur les notes.
 ```{r}
-app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25) 
+app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25) + ylab("nbApplication")
 ```
 On peut observer que non, l'âge conseillé n'a pas vraiment d'influence sur les notes, les proportions sont à peu près similaires peu importe la note.
 
-Ici nous alors regarder si le nombre note dispo change la note
+Ici nous alors regarder si le nombre de langue dispo change la note
 ```{r}
-tableau_app_langue <- app %>% summarize((str_split(Languages,", "),Name,`Average User Rating`) 
 ```
