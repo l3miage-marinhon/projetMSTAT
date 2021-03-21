@@ -85,9 +85,10 @@ On peut donc conclure que à partir d'environ 15 dollars, le prix d'une applicat
 
 Ici, nous allons regarder si la catégorie du jeu a une influence sur les notes, en moyenne.
 ```{r , fig.width=20,fig.height=4}
-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% ggplot(app,mapping=aes(`Primary Genre`,AvgGrade,fill=`Primary Genre`))+geom_col()
+prAvg<- app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% summarise(AvgGrade=mean(`Average User Rating`),sd=sd(`Average User Rating`)) %>% ggplot(app,mapping=aes(`Primary Genre`,AvgGrade,fill=`Primary Genre`))+geom_col()
+  prAvg + geom_errorbar(aes(ymin=AvgGrade-sd,ymax=AvgGrade+sd),width = 0.2)
 ```
-//ici pensez a mettre notre marge d'erreur avec geom_errorbar(nico)
+
 On peut effectivement observer que certaines catégories comme Food & Drink ou Newson une moyenne très haute, casiment à 5, alors que Medical et Lifestyle sont des catégories avec des moyennes beaucoup plus faibles, proche de 3. On peut en conclure que la catégorie de l'application a une vrai relation avec la note, les développeurs ont en moyenne des meilleures notes sur certaines catégories que sur d'autres.
 
 
@@ -100,10 +101,15 @@ En conclusion on ne peut pas dire qu'avoir des achats dans l'application à une 
 
 Maintenant, nous allons regarder si l'Age Rating, donc l'âge conseillé pour telle ou telle application, a une influence sur les notes.
 ```{r}
-app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25) + ylab("nbApplication")
+app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>%ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25)
 ```
 On peut observer que non, l'âge conseillé n'a pas vraiment d'influence sur les notes, les proportions sont à peu près similaires peu importe la note.
 
+```{r}
+app %>% summarise(nbLangues=trunc(str_length(str_c(str_split(Languages,", ")))/2),Name,`Average User Rating`) %>% filter(!is.na(nbLangues))%>% ggplot(app,mapping=aes(`Average User Rating`,nbLangues,color=nbLangues)) + geom_jitter() +
+  geom_smooth(method = "lm",color="red")
+```
+ici on peut voir que les notes sont assez homogènes selon le nombre langue disponible. Mais peut voir que la tendances a pour vocation d'augmenter sur le nombre de langue pour avoir des meilleurs notes.   
 
 //FAIRE LA GRANDE CONCLUSION (ENTWAN et TOUDRAX)
 
