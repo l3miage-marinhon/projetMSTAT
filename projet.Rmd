@@ -120,17 +120,17 @@ app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>
 ```
 
 ```{r}
-app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`,ylab("nbApplication")))+ geom_histogram(binwidth = 0.25)
+app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25) +ylab("nbApplication")
 ```
 A VOIR SI UN DES DEUX PEUT ETRE BIEN OU LES DEUX
 
 Maintenant, nous allons regarder si l'Age Rating, donc l'âge conseillé pour tel ou tel application, a une influence sur les notes.
 ```{r}
-app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25) 
+app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25)
 ```
 On peut observer que non, l'âge conseillé n'a pas vraiment d'influence sur les notes, les proportions sont à peu près similaires peu importe la note.
 
 Ici nous alors regarder si le nombre note dispo change la note
 ```{r}
-tableau_app_langue <- app %>% summarize((str_split(Languages,", "),Name,`Average User Rating`) 
+
 ```
