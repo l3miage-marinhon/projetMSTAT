@@ -1,6 +1,6 @@
 ---
 title: "Projet etude app mobile"
-author: "Marinho Nicolas et Bruyere Nicolas"
+author: "Marinho Nicolas et Bruyere Nicolas et Antoine Volozan et Elouan Delamer"
 date: "2/24/2021"
 output: pdf_document
 langages: french 
@@ -11,29 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(forcats)
-
-version
 ```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 récupération du jeu de données.
 ```{r}
@@ -83,13 +61,11 @@ Et ici on peut voir tous de suite que le nombre d'app à notre actif n'a aucun r
 app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% summarise(AvgGrade=mean(`Average User Rating`)) %>% arrange(Developer,by_group=TRUE) 
 ```
 
-
 Ici on va voir si un nombre de note important indique une très bonne note.
 ```{r}
 app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% filter(!is.na(`Average User Rating`)) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+ geom_jitter(size=3) + geom_smooth(method = "lm",color="red")
 ```
-On peut effectivement voir que dans la plupart des cas avoir plus de note veut dire une bonne note, il y a bien evidement quelques exceptions mais dans l'ensemble, avoir beaucoup de notes veut dire une bonne note.
-
+On peut effectivement voir que dans la plupart des cas avec plus de note veut dire une bonne note, il y a bien evidement quelques exceptions mais dans l'ensemble, avoir beaucoup de notes veut dire une bonne note.
 
 Essayons avec les applications qui ont le moins de vote.
 ```{r}
@@ -129,3 +105,23 @@ A VOIR SI UN DES DEUX PEUT ETRE BIEN OU LES DEUX
 ```{r}
 app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25) 
 ```
+
+Nous pouvons regarder si la taille de l'application à une influence sur la note
+```{r}
+app %>% arrange(`Size`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Size`, `Average User Rating`) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=Size,color = `Average User Rating`))+ geom_jitter() + geom_smooth(color="red",show.legend = TRUE)
+```
+On remarque que les applications de taille conséquente n'ont pas de mauvaises note, les grosses applications ont au minimum 2.5 en notes . Cependant il y a des applications peu lourde qui ont de très bonnes notes aussi. L'inverse est donc faux. Conclusion -> la taille n'influe pas sur la note mais on peut remarquer que les applications les plus lourdes sont rarement très mal notées.
+
+
+Maintenant nous allons comparer sur la date de sortie.
+```{r}
+app %>% arrange(`Original Release Date`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Original Release Date`, `Average User Rating`) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`Original Release Date`,color = `Average User Rating`))+ geom_jitter()
+```
+ICi, nous ne pouvons pas voir de densité de points plus importants à un endroit qu'a un autre. Cela veut dire que peu importe la date de sortie d'un jeu cela n'a pas d'influence sur la notation.
+
+
+Nous allons voir sur la date de mise a jour
+```{r}
+app %>% arrange(`Current Version Release Date`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Current Version Release Date`, `Average User Rating`) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`Current Version Release Date`,color = `Average User Rating`))+ geom_jitter() 
+```
+Pareil, ici, la date en bas n'a pas d'influence sur la note.
