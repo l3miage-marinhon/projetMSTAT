@@ -120,7 +120,7 @@ app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>
 ```
 
 ```{r}
-app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`,ylab("nbApplication")))+ geom_histogram(binwidth = 0.25)
+app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25) + ylab("nbApplication")
 ```
 A VOIR SI UN DES DEUX PEUT ETRE BIEN OU LES DEUX
 
