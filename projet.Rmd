@@ -1,6 +1,6 @@
 ---
 title: "Projet etude app mobile"
-author: "Marinho Nicolas et Bruyere Nicolas"
+author: "Marinho Nicolas et Bruyere Pierre"
 date: "2/24/2021"
 output: pdf_document
 langages: french 
