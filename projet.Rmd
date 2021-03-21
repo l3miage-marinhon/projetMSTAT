@@ -129,3 +129,7 @@ A VOIR SI UN DES DEUX PEUT ETRE BIEN OU LES DEUX
 ```{r}
 app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25) 
 ```
+Ici nous alors regarder si le nombre note dispo change la note
+```{r}
+table1<-split(app$Languages,",")
+```
