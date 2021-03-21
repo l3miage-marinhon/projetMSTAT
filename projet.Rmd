@@ -104,3 +104,6 @@ app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% sele
 ```
 On peut observer que non, l'âge conseillé n'a pas vraiment d'influence sur les notes, les proportions sont à peu près similaires peu importe la note.
 
+
+//FAIRE LA GRANDE CONCLUSION (ENTWAN et TOUDRAX)
+
