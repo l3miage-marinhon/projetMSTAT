@@ -1,6 +1,6 @@
 ---
 title: "Projet etude app mobile"
-author: "Marinho Nicolas et Bruyere Nicolas"
+author: "Marinho Nicolas et Bruyere Pierre"
 date: "2/24/2021"
 output: pdf_document
 langages: french 
@@ -122,7 +122,7 @@ app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>
 ```
 
 ```{r}
-app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25)
+app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`,ylab("nbApplication")))+ geom_histogram(binwidth = 0.25)
 ```
 A VOIR SI UN DES DEUX PEUT ETRE BIEN OU LES DEUX
 
@@ -131,5 +131,5 @@ app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% sele
 ```
 Ici nous alors regarder si le nombre note dispo change la note
 ```{r}
-table1<-split(app$Languages,",")
+tableau_app_langue <- app %>% summarize((str_split(Languages,", "),Name,`Average User Rating`) 
 ```
