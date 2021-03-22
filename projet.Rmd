@@ -1,5 +1,5 @@
 ---
-title: "Projet etude app mobile"
+title: "Projet etude des notes d'applications mobile"
 author: "Marinho Nicolas, Bruyere Pierre, Volozan Antoine et Delamer Elouan"
 date: "03/21/2021"
 output: pdf_document
@@ -26,37 +26,65 @@ Nous avons décidé que pour étudier ce jeu de données nous allions utiliser l
 
 Nous avons, dans un premier temps décidé de regarder si les développeurs qui ont beaucoup d'applications à leur actif sur l'Appstore ont des bonnes notes.
 
+# 1. Le nombre d'application par developpeur
+
 Donc on commence par regarder ceux qui ont le plus d'applications à leur actif.
 ```{r}
-app %>% group_by(Developer) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=15) ;
+app %>% 
+  group_by(Developer) %>% 
+  count(ID,name="nb") %>% 
+  summarize(countApp = sum(nb)) %>% 
+  arrange(-countApp) %>% head(n=15) ;
 ```
 Ici on a le tableau des 10 premiers développeurs qui ont le plus d'applications à leur actif.
 
 Ensuite on va faire un comparatif avec leur note
-```{r}
-app %>%  group_by(Developer,`Average User Rating`) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp) %>% head(n=10) %>% select(Developer,`Average User Rating`,countApp);
+```{r message=FALSE, warning=FALSE}
+app %>%  
+  group_by(Developer,`Average User Rating`) %>% 
+  count(ID,name="nb") %>% 
+  summarize(countApp = sum(nb)) %>% 
+  arrange(-countApp) %>% head(n=10) %>% 
+  select(Developer,`Average User Rating`,countApp);
 ```
-Mais ici on peut voir que certaines applications de ces développeurs ne sont pas notées voila pourquoi nous avons des NA... 
+Mais ici on peut voir que certaines applications de ces développeurs ne sont pas notées voila pourquoi nous avons des NA, on prendra pour acquis pour la suite que les valeurs NA seront filtrer directement 
 
 Alors maintenant nous allons regarder ceux qui ont le plus d'applications notées.
-```{r}
-nbApp<-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% count(ID,name="nb") %>% summarize(countApp = sum(nb)) %>% arrange(-countApp)  
+```{r message=FALSE, warning=FALSE}
+nbApp<-app %>% 
+  filter(!is.na(`Average User Rating`)) %>% 
+  group_by(Developer) %>% count(ID,name="nb") %>% 
+  summarize(countApp = sum(nb)) %>% 
+  arrange(-countApp)  
 
-moyGradeDev<-app %>% filter(!is.na(`Average User Rating`)) %>% group_by(Developer) %>% summarize(AvgGrade=mean(`Average User Rating`))
+moyGradeDev<-app %>% 
+  filter(!is.na(`Average User Rating`)) %>% 
+  group_by(Developer) %>% 
+  summarize(AvgGrade=mean(`Average User Rating`))
 
-tableFinal<-left_join(nbApp,moyGradeDev) %>% arrange(-nbApp$countApp)
+tableFinal<-left_join(nbApp,moyGradeDev)%>%
+  arrange(-nbApp$countApp)
 
 tableFinal %>% select_all()
 
-tableFinal %>% ggplot(tableFinal,mapping=aes(countApp,AvgGrade,color=AvgGrade))+ geom_jitter()+geom_smooth(method="auto",color="red",se=TRUE)
+tableFinal %>%
+  ggplot(tableFinal,mapping=aes(countApp,AvgGrade,color=AvgGrade))+
+  geom_jitter()+
+  geom_smooth(method="auto",color="red",se=TRUE)
 ```
 
 On peut voir tout de suite que le nombre d'applications aux actifs des développeurs n'a aucun rapport avec les notes des applications.
 
 
 Maintenant, nous allons voir si une application ayant beaucoup de notes implique que cette application aura une bonne note.
-```{r}
-app %>% arrange(-`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% filter(!is.na(`Average User Rating`)) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+ geom_jitter(size=1) + geom_smooth(method = "auto",color="red")
+```{r message=FALSE, warning=FALSE}
+app %>%
+  arrange(-`User Rating Count`) %>%
+  select(`Average User Rating`, `User Rating Count`) %>%
+  filter(!is.na(`Average User Rating`)) %>%
+  ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+
+  geom_jitter(size=1) +
+  geom_smooth(method = "auto",color="red")
 ```
 On peut effectivement voir que dans la plupart des cas, une application qui a beaucoup de notes sera aussi une application qui aura une bonne note, il y a bien évidemment quelques exceptions mais dans l'ensemble, avoir beaucoup de notes veut dire une bonne note.
 On voit aussi que la courbe de confiance commence à 4 et monte très vite aux alentours de 4.3, et qui reste à ce niveau jusqu'à 3 000 000 de notes, l'intervalle de confiance par contre est très précis au début car il y a un grand nombre d'applications qui ont peu (de l'orde des dizaines de milliers) de notes alors qu'après, à partir de 500 000 notes par application l'intervalle de confiance est très peu précis puiqu'il y a très peu d'applications avec autant de notes.
@@ -64,8 +92,14 @@ On voit aussi que la courbe de confiance commence à 4 et monte très vite aux a
 
 Mais, est-ce-qu'une application qui a peu de notes veut dire qu'elle a une mauvaise note?
 C'est ce que nous allons regarder maintenant.
-```{r}
-app %>% arrange(`User Rating Count`) %>% select(`Average User Rating`, `User Rating Count`) %>% head(n=7000) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+ geom_jitter() + geom_smooth(method = "auto",color="red")
+```{r message=FALSE, warning=FALSE}
+app %>%
+  arrange(`User Rating Count`) %>%
+  select(`Average User Rating`, `User Rating Count`) %>%
+  head(n=7000) %>%
+  ggplot(app,mapping = aes(y=`Average User Rating`,x=`User Rating Count`,color = `Average User Rating`))+
+  geom_jitter() +
+  geom_smooth(method = "auto",color="red")
 ```
 On voit ici le même graphique mais avec des données plus restreintes, avec 4000 comme nombre de notes maximum et on voit donc la partie précise de la courbe de confiance et on voit qu'effectivement, il y a beaucoup d'applications qui permettent donc d'avoir un intervalle de confiance précis.
 On peut conclure que non, avoir peu de notes ne veut pas dire avoir une mauvaise note, on peut en effet voir que les résultats sont très éparpillés et prouvent donc que la réponse à notre question est non.
@@ -73,8 +107,14 @@ On peut conclure que non, avoir peu de notes ne veut pas dire avoir une mauvaise
 
 
 Dans cette partie, nous allons voir si une application qui a un prix aura une bonne note.
-```{r,fig.width=10}
-app %>% arrange(-Price) %>% filter(!is.na(`Average User Rating`)) %>% select(`Average User Rating`, Price) %>% ggplot(app,mapping = aes(y=`Average User Rating`,x=Price,color = `Average User Rating`,scale(Price,)))+ geom_jitter() + geom_smooth(method="auto",color="red") +xlab("Price ($)")
+```{r,fig.width=10 warning=FALSE, r,fig.width=10}
+app %>%
+  arrange(-Price) %>%
+  filter(!is.na(`Average User Rating`)) %>%
+  select(`Average User Rating`, Price) %>%
+  ggplot(app,mapping = aes(y=`Average User Rating`,x=Price,color = `Average User Rating`,scale(Price,)))+
+  geom_jitter() +
+  geom_smooth(method="auto",color="red") +xlab("Price ($)")
 ```
 On voit ici que la tendance est très linéaire, c'est une droite avec très peu de changement (presque parallèle à l'axe des abscisses) et qui a un intervalle de confiance très précis.
 On peut partager les résultats en deux, les applications qui coûtent moins de 15 dollars et celles qui coûtent plus de 15 dollars.
@@ -85,7 +125,12 @@ On peut donc conclure qu'à partir d'environ 15 dollars, le prix d'une applicati
 
 Ici, nous allons regarder si la catégorie du jeu a une influence sur les notes, en moyenne.
 ```{r , fig.width=20,fig.height=4}
-prAvg<- app %>% filter(!is.na(`Average User Rating`)) %>% group_by(`Primary Genre`) %>% summarise(AvgGrade=mean(`Average User Rating`),sd=sd(`Average User Rating`)) %>% ggplot(app,mapping=aes(`Primary Genre`,AvgGrade,fill=`Primary Genre`))+geom_col()
+prAvg<- app %>%
+  filter(!is.na(`Average User Rating`)) %>%
+  group_by(`Primary Genre`) %>%
+  summarise(AvgGrade=mean(`Average User Rating`),sd=sd(`Average User Rating`)) %>%
+  ggplot(app,mapping=aes(`Primary Genre`,AvgGrade,fill=`Primary Genre`))+
+  geom_col()
   prAvg + geom_errorbar(aes(ymin=AvgGrade-sd,ymax=AvgGrade+sd),width = 0.2)
 ```
 //ici pensez a mettre notre marge d'erreur avec geom_errorbar(nico)
@@ -93,20 +138,37 @@ On peut effectivement observer que certaines catégories comme Food & Drink ou N
 
 
 Ici on va regarder si la possibilité d'achats dans l'application a une influence sur la note, avec des différences selon le nombre et le coût des achats.
-```{r}
-app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25) + ylab("nbApplication")
+```{r warning=FALSE}
+app %>%
+  arrange(`In-app Purchases`) %>%
+  filter(!is.na(`Average User Rating`)) %>%
+  filter(!is.na(`In-app Purchases`)) %>%
+  group_by(`In-app Purchases`) %>%
+  select(`In-app Purchases`, `Average User Rating`) %>%
+  head(500) %>%
+  ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+
+  geom_histogram(binwidth = 0.25) + ylab("nbApplication")
 ```
 On peut voir que la possiblité d'acheter dans l'application n'influe pas vraiment sur la note car on voit que des applications avec les mêmes possibilités d'achats (0.99 par exemple), ont des notes allant de 2 à 5.
 En conclusion on ne peut pas dire qu'avoir des achats dans l'application à une influence sur la note d'une application.
 
 Maintenant, nous allons regarder si l'Age Rating, donc l'âge conseillé pour telle ou telle application, a une influence sur les notes.
-```{r}
-app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>%ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25)
+```{r message=FALSE, warning=FALSE}
+app %>%
+  arrange(`Age Rating`) %>%
+  filter(!is.na(`Average User Rating`)) %>%
+  select(`Age Rating`, `Average User Rating`) %>%
+  ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+
+  geom_histogram(binwidth = 0.25)
 ```
 On peut observer que non, l'âge conseillé n'a pas vraiment d'influence sur les notes, les proportions sont à peu près similaires peu importe la note.
 
-```{r}
-app %>% summarise(nbLangues=trunc(str_length(str_c(str_split(Languages,", ")))/2),Name,`Average User Rating`) %>% filter(!is.na(nbLangues))%>% ggplot(app,mapping=aes(`Average User Rating`,nbLangues,color=nbLangues)) + geom_jitter() +
+```{r message=FALSE, warning=FALSE}
+app %>%
+  summarise(nbLangues=trunc(str_length(str_c(str_split(Languages,", ")))/2),Name,`Average User Rating`) %>%
+  filter(!is.na(nbLangues))%>%
+  ggplot(app,mapping=aes(`Average User Rating`,nbLangues,color=nbLangues)) +
+  geom_jitter() +
   geom_smooth(method = "lm",color="red")
 ```
 ici on peut voir que les notes sont assez homogènes selon le nombre langue disponible. Mais peut voir que la tendances a pour vocation d'augmenter sur le nombre de langue pour avoir des meilleurs notes.
