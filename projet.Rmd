@@ -107,7 +107,7 @@ On peut conclure que non, avoir peu de notes ne veut pas dire avoir une mauvaise
 
 
 Dans cette partie, nous allons voir si une application qui a un prix aura une bonne note.
-```{r,fig.width=10 warning=FALSE, r,fig.width=10}
+```{r,fig.width=10,warning=FALSE, r,fig.width=10}
 app %>%
   arrange(-Price) %>%
   filter(!is.na(`Average User Rating`)) %>%
