@@ -96,19 +96,6 @@ Ici on va regarder si la possibilité d'achats dans l'application a une influenc
 ```{r}
 app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25) + ylab("nbApplication")
 ```
-On peut voir que la possibilité d'acheter dans l'application n'influe pas vraiment sur la note car on voit que des applications avec les mêmes possibilités d'achats (0.99 par exemple), ont des notes allant de 2 à 5.
-En conclusion on ne peut pas dire qu'avoir des achats dans l'application à une influence sur la note d'une application.
-
-Maintenant, nous allons regarder si l'Age Rating, donc l'âge conseillé pour telle ou telle application, a une influence sur les notes.
-```{r}
-app %>% arrange(`Age Rating`) %>% filter(!is.na(`Average User Rating`)) %>% select(`Age Rating`, `Average User Rating`) %>%ggplot(app,mapping = aes(x=`Average User Rating`,fill = `Age Rating`))+ geom_histogram(binwidth = 0.25)
-```
-On peut observer que non, l'âge conseillé n'a pas vraiment d'influence sur les notes, les proportions sont à peu près similaires peu importe la note.
-
-Ici on va regarder si la possibilité d'achats dans l'application a une influence sur la note, avec des différences selon le nombre et le coût des achats.
-```{r}
-app %>% arrange(`In-app Purchases`) %>% filter(!is.na(`Average User Rating`)) %>% filter(!is.na(`In-app Purchases`)) %>% group_by(`In-app Purchases`) %>%  select(`In-app Purchases`, `Average User Rating`) %>% head(500) %>% ggplot(app,mapping = aes(x=`Average User Rating`,fill = `In-app Purchases`))+ geom_histogram(binwidth = 0.25) + ylab("nbApplication")
-```
 On peut voir que la possiblité d'acheter dans l'application n'influe pas vraiment sur la note car on voit que des applications avec les mêmes possibilités d'achats (0.99 par exemple), ont des notes allant de 2 à 5.
 En conclusion on ne peut pas dire qu'avoir des achats dans l'application à une influence sur la note d'une application.
 
